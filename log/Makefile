@@ -11,7 +11,7 @@ $(TARGET): $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS) $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET) xx.log
+	rm -f $(TARGET) xxx.log
 
 run: $(TARGET)
 	./$(TARGET)
