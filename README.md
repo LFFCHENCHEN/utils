@@ -13,6 +13,8 @@
 + 使用互斥锁、增加线程安全
 + 在publish增强、添加重连机制
 + 使用函数指针、lambda表达式、增加代码可读性
++ 使用mosquitto_loop_start()替代mosquitto_loop()
++ 在析构函数中条件mosiquitto_loop_stop()
 
 ### utils-log
 

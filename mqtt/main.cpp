@@ -1,4 +1,4 @@
-#include "MqttClient.h"
+#include "MqttClient.hpp"
 #include <iostream>
 
 int main() {
@@ -53,12 +53,12 @@ int main() {
   } else {
     DBG(ERROR) << "Failed to subscribe to topic." << std::endl;
   }
-
+  client.loop();
   // Start the loop to process callbacks
-  while (true) {
-    client.loop();
-    // Perform other tasks here
-  }
+  // while (true) {
+  
+  //   // Perform other tasks here
+  // }
 
   return 0;
 }
