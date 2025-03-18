@@ -176,5 +176,5 @@ void ThreadPool::set_thread_affinity(std::thread::native_handle_type handle,
 void ThreadPool::set_thread_affinity(...) {}
 #endif
 
-} // namespace TPOOL
+} // namespace Tpool
 #endif // THREAD_POOL_HPP

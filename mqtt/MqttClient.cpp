@@ -40,11 +40,9 @@ bool MqttClient::connect() {
   std::lock_guard<std::mutex> lock(mosq_mutex_);
   int ret = mosquitto_connect(mosq_, host_.c_str(), port_, 60);
   if (ret == MOSQ_ERR_SUCCESS) {
-    DBG(INFO) << "Connected to MQTT broker at " << host_ << ":" << port_
-              << std::endl;
+    APP_DBG("Connected to MQTT broker at %s：%d", host_.c_str(), port_);
   } else {
-    DBG(ERROR) << "Failed to connect to MQTT broker at " << host_ << ":"
-               << port_ << std::endl;
+    APP_DBG("Failed to connect to MQTT broker at %s：%d", host_.c_str(), port_);
   }
   return ret == MOSQ_ERR_SUCCESS;
 }
@@ -52,7 +50,7 @@ bool MqttClient::connect() {
 void MqttClient::disconnect() {
   std::lock_guard<std::mutex> lock(mosq_mutex_);
   mosquitto_disconnect(mosq_);
-  DBG(INFO) << "Disconnected from MQTT broker" << std::endl;
+  APP_WAR("Disconnected from MQTT broker");
 }
 
 bool MqttClient::publish(const std::string &topic, const void *payload,
@@ -61,18 +59,19 @@ bool MqttClient::publish(const std::string &topic, const void *payload,
   int ret = mosquitto_publish(mosq_, nullptr, topic.c_str(), payloadlen,
                               payload, 1, false);
   if (ret == MOSQ_ERR_SUCCESS) {
-    DBG(INFO) << "Published message to topic " << topic << std::endl;
+    APP_DBG("Published message to topic :%s\n%s", topic.c_str(),
+            (char *)payload);
   } else {
-    DBG(ERROR) << "Failed to publish message to topic " << topic << std::endl;
+    APP_ERR("Failed to publish message to topic %s", topic.c_str());
     if (reconnect()) {
       ret = mosquitto_publish(mosq_, nullptr, topic.c_str(), payloadlen,
                               payload, 1, false);
       if (ret == MOSQ_ERR_SUCCESS) {
-        DBG(INFO) << "Published message to topic " << topic
-                  << " after reconnecting" << std::endl;
+        APP_DBG("Published message to topic %s after reconnecting",
+                topic.c_str());
       } else {
-        DBG(ERROR) << "Failed to publish message to topic " << topic
-                   << " after reconnecting" << std::endl;
+        APP_ERR("Failed to publish message to topic %s after reconnecting",
+                topic.c_str());
       }
     }
   }
@@ -83,9 +82,9 @@ bool MqttClient::subscribe(const std::string &topic) {
   std::lock_guard<std::mutex> lock(mosq_mutex_);
   int ret = mosquitto_subscribe(mosq_, nullptr, topic.c_str(), 1);
   if (ret == MOSQ_ERR_SUCCESS) {
-    DBG(INFO) << "Subscribed to topic " << topic << std::endl;
+    APP_DBG("Subscribed to topic %s", topic.c_str());
   } else {
-    DBG(ERROR) << "Failed to subscribe to topic " << topic << std::endl;
+    APP_WAR("Failed to subscribe to topic ");
   }
   return ret == MOSQ_ERR_SUCCESS;
 }
@@ -94,9 +93,9 @@ bool MqttClient::unsubscribe(const std::string &topic) {
   std::lock_guard<std::mutex> lock(mosq_mutex_);
   int ret = mosquitto_unsubscribe(mosq_, nullptr, topic.c_str());
   if (ret == MOSQ_ERR_SUCCESS) {
-    DBG(INFO) << "Unsubscribed from topic " << topic << std::endl;
+    APP_WAR("Unsubscribed from topic %s", topic.c_str());
   } else {
-    DBG(ERROR) << "Failed to unsubscribe from topic " << topic << std::endl;
+    APP_ERR("Failed to unsubscribe from topic %s", topic.c_str());
   }
   return ret == MOSQ_ERR_SUCCESS;
 }
@@ -108,13 +107,13 @@ bool MqttClient::reconnect() {
   while (retries-- > 0) {
     int ret = mosquitto_reconnect(mosq_);
     if (ret == MOSQ_ERR_SUCCESS) {
-      DBG(INFO) << "Reconnected successfully" << std::endl;
+      APP_DBG("Reconnected successfully");
       return true;
     }
-    DBG(WARNING) << "Reconnect attempt failed, retrying..." << std::endl;
+    APP_WAR("Reconnect attempt failed, retrying...");
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
-  DBG(ERROR) << "Reconnect failed after multiple attempts" << std::endl;
+  APP_ERR("Reconnect failed after multiple attempts");
   return false;
 }
 
@@ -142,7 +141,6 @@ void MqttClient::set_on_message(
 
 void MqttClient::start() {
   // Removed infinite loop
-  DBG(INFO) << "MQTT client started" << std::endl;
 }
 
 void MqttClient::loop(int timeout, int max_packets) {

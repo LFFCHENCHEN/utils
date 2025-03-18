@@ -11,54 +11,54 @@ int main() {
 
   client.set_on_connect([](struct mosquitto *mosq, void *obj, int rc) {
     if (rc == 0) {
-      DBG(INFO) << "Connected successfully." << std::endl;
+      APP_DBG("Connected successfully.");
     } else {
-      DBG(ERROR) << "Connect failed." << std::endl;
+      APP_ERR("Connect failed.");
     }
   });
 
   client.set_on_disconnect([](struct mosquitto *mosq, void *obj, int rc) {
-    DBG(INFO) << "Disconnected." << std::endl;
+    APP_DBG("Disconnected.");
   });
 
   client.set_on_publish([](struct mosquitto *mosq, void *obj, int mid) {
-    DBG(INFO) << "Message published (mid: " << mid << ")." << std::endl;
+    APP_DBG("Message published (mid: %d)", mid);
   });
 
   client.set_on_message([](struct mosquitto *mosq, void *obj,
                            const struct mosquitto_message *message) {
-    DBG(INFO) << "Received message: " << (char *)message->payload
-              << " on topic: " << message->topic << std::endl;
+    APP_DBG("Received message: %s\n on topic: %s", (char *)message->payload,
+            message->topic);
   });
 
   if (client.connect()) {
-    DBG(INFO) << "Connecting to MQTT broker..." << std::endl;
+    APP_DBG("Connecting to MQTT broker...");
   } else {
-    DBG(ERROR) << "Failed to connect to MQTT broker." << std::endl;
-    return 1;
+    APP_ERR("Failed to connect to MQTT broker.");
+    return -1;
   }
 
   // Publish a message
   std::string topic = "test/topic";
   std::string payload = "Hello, MQTT!";
   if (client.publish(topic, payload.c_str(), payload.size())) {
-    DBG(INFO) << "Message published successfully." << std::endl;
+    APP_DBG("Message published successfully.");
   } else {
-    DBG(ERROR) << "Failed to publish message." << std::endl;
+    APP_ERR("Failed to publish message.");
   }
 
   // Subscribe to a topic
   if (client.subscribe(topic)) {
-    DBG(INFO) << "Subscribed to topic: " << topic << std::endl;
+    APP_DBG("Subscribed to topic: %s", topic.c_str());
   } else {
-    DBG(ERROR) << "Failed to subscribe to topic." << std::endl;
+    APP_ERR("Failed to subscribe to topic.");
   }
   client.loop();
   // Start the loop to process callbacks
-  // while (true) {
-  
-  //   // Perform other tasks here
-  // }
+  while (true) {
+
+    // Perform other tasks here
+  }
 
   return 0;
 }
