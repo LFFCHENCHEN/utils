@@ -3,7 +3,7 @@
 #include <cstdio> // 使用标准库函数
 #include <ctime>  // 时间处理
 #include <mutex>
-
+#define DEBUG
 #define ANSI_COLOR(code) "\033[" #code "m"
 #define COLOR_RESET ANSI_COLOR(0)
 #define COLOR_RED ANSI_COLOR(31)
@@ -28,7 +28,7 @@ inline void format_time(char *buffer, size_t size) {
   strftime(buffer, size, "%Y-%m-%d %H:%M:%S", &timeinfo);
 }
 
-#define LOG(level, color, stream, format, ...)                                 \
+#define mLOG(level, color, stream, format, ...)                                \
   do {                                                                         \
     std::lock_guard<std::mutex> lock(get_dbg_mtx());                           \
     char timestamp[20];                                                        \
@@ -39,11 +39,11 @@ inline void format_time(char *buffer, size_t size) {
   } while (0)
 
 #define APP_DBG(format, ...)                                                   \
-  LOG("DBG", COLOR_GREEN, stdout, format, ##__VA_ARGS__)
+  mLOG("DBG", COLOR_GREEN, stdout, format, ##__VA_ARGS__)
 #define APP_WAR(format, ...)                                                   \
-  LOG("WAR", COLOR_YELLOW, stdout, format, ##__VA_ARGS__)
+  mLOG("WAR", COLOR_YELLOW, stdout, format, ##__VA_ARGS__)
 #define APP_ERR(format, ...)                                                   \
-  LOG("ERR", COLOR_RED, stderr, format, ##__VA_ARGS__)
+  mLOG("ERR", COLOR_RED, stderr, format, ##__VA_ARGS__)
 #else
 #define APP_DBG(format, ...) ((void)0)
 #define APP_WAR(format, ...) ((void)0)

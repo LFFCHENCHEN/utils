@@ -55,7 +55,7 @@ private:
   void set_thread_affinity(std::thread::native_handle_type handle, int core_id);
 };
 
-ThreadPool::ThreadPool(size_t threads, bool enable_affinity)
+inline ThreadPool::ThreadPool(size_t threads, bool enable_affinity)
     : stop(false), affinity_enabled(enable_affinity) {
   try {
     for (size_t i = 0; i < threads; ++i) {
@@ -97,7 +97,7 @@ auto ThreadPool::enqueue(Priority priority, F &&f, Args &&...args)
   return res;
 }
 
-void ThreadPool::resize(size_t new_size) {
+inline void ThreadPool::resize(size_t new_size) {
   if (stop)
     return;
 
@@ -130,14 +130,14 @@ void ThreadPool::resize(size_t new_size) {
   }
 }
 
-void ThreadPool::worker_loop() {
-  while (!stop) {
+inline void ThreadPool::worker_loop() {
+  for (;;) {
     Task task;
     {
       std::unique_lock<std::mutex> lock(queue_mutex);
-      condition.wait(lock, [this] { return stop || !tasks.empty(); });
+      condition.wait(lock, [this] { return this->stop || !tasks.empty(); });
 
-      if (stop && tasks.empty())
+      if (this->stop && tasks.empty())
         return;
 
       task = tasks.top();
@@ -152,7 +152,7 @@ void ThreadPool::worker_loop() {
   }
 }
 
-void ThreadPool::shutdown() noexcept {
+inline void ThreadPool::shutdown() noexcept {
   stop = true;
   condition.notify_all();
   for (auto &worker : workers) {
@@ -161,19 +161,20 @@ void ThreadPool::shutdown() noexcept {
   }
 }
 
-ThreadPool::~ThreadPool() noexcept { shutdown(); }
+inline ThreadPool::~ThreadPool() noexcept { shutdown(); }
 
 #ifdef __linux__
 #include <pthread.h>
-void ThreadPool::set_thread_affinity(std::thread::native_handle_type handle,
-                                     int core_id) {
+inline void
+ThreadPool::set_thread_affinity(std::thread::native_handle_type handle,
+                                int core_id) {
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET(core_id % CPU_SETSIZE, &cpuset);
   pthread_setaffinity_np(handle, sizeof(cpu_set_t), &cpuset);
 }
 #else
-void ThreadPool::set_thread_affinity(...) {}
+inline void ThreadPool::set_thread_affinity(...) {}
 #endif
 
 } // namespace Tpool

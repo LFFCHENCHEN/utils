@@ -21,14 +21,14 @@ int main() {
            "20971520"); // 20M
 
   conf.set(el::Level::Info, el::ConfigurationType::Format,
-           COLOR_BLUE "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] [%thread] "
-                      "%fbase:%line | %msg" COLOR_RESET);
+           "%datetime{%Y-%M-%d %H:%m:%s.%g}" COLOR_BLUE " INF " COLOR_RESET
+           "[%fbase:%line] | %msg");
   conf.set(el::Level::Warning, el::ConfigurationType::Format,
-           COLOR_YELLOW "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] [%thread] "
-                        "%fbase:%line | %msg" COLOR_RESET);
+           "%datetime{%Y-%M-%d %H:%m:%s.%g}" COLOR_YELLOW " WAR " COLOR_RESET
+           "[%fbase:%line] | %msg");
   conf.set(el::Level::Error, el::ConfigurationType::Format,
-           COLOR_RED "%datetime{%Y-%M-%d %H:%m:%s.%g} [%level] [%thread] "
-                     "%fbase:%line | %msg" COLOR_RESET);
+           "%datetime{%Y-%M-%d %H:%m:%s.%g}" COLOR_RED " ERR " COLOR_RESET
+           "[%fbase:%line] | %msg");
   el::Loggers::reconfigureLogger("default", conf);
 
   LOG(INFO) << "This is an info log message.";
