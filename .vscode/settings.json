@@ -63,6 +63,9 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "future": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "i2c.h": "c",
+        "input-event-codes.h": "c",
+        "curl.h": "c"
     }
 }
