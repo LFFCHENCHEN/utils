@@ -17,10 +17,11 @@ CXX_FLAGS := $(CXX_BASE_FLAGS) -std=c++11 -g -O2
 CXX_FLAGS += -MMP -MD 
 CXX_FLAGS += $(INC_PATH)
 
+LD_PATH := $(foreach dir,$(LD_DIR),-L$(dir))
 LD_LIB := -lstdc++ -lm
 LD_BASE_FLAGS := -Wl,-Map,$(MAP) -Wl,--gc-sections
-LD_PATH := $(foreach dir,$(LD_DIR),-L$(dir))
-LD_FLAGS := $(LD_BASE_FLAGS) $(LD_PATH) $(LD_LIB)
+
+LD_FLAGS := $(LD_PATH) $(LD_LIB) $(LD_BASE_FLAGS)
 
 SRC := $(foreach dir,$(SRC_DIR),$(wildcard $(dir)/*.cpp))
 OBJ := $(SRC:%.cpp=%.o)
@@ -48,7 +49,3 @@ clean:
 
 # 支持并行编译
 MAKEFLAGS += -j$(shell nproc)
-
-
-
-
