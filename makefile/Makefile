@@ -1,4 +1,5 @@
 PROJECT_NAME := test
+GIT_VERSION := $(shell git rev-parse --short HEAD)
 VERSION := 1.0.0
 DATE := $(shell date +%Y%m%d)
 BIN := xxx_$(DATE)_$(VERSION)
