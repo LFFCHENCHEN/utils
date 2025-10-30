@@ -46,3 +46,7 @@
 ### utils-makefile
 
 + 添加makefile模板
+
+### utils-memory_manage
+
++ 添加内存管理（c实现）
